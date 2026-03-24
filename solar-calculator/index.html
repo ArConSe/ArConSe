@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solar System Calculator – Philippines</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fff8e1, #fffde7);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header .sun-icon { font-size: 48px; }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: #e65100;
+      margin-top: 8px;
+    }
+
+    header p {
+      color: #666;
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 32px;
+      width: 100%;
+      max-width: 560px;
+      margin-bottom: 24px;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      color: #e65100;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ffe0b2;
+      padding-bottom: 8px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    label span {
+      font-weight: 400;
+      color: #999;
+      font-size: 0.82rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: #fb8c00;
+    }
+
+    .row {
+      display: flex;
+      gap: 14px;
+    }
+
+    .row .field { flex: 1; }
+
+    button#calcBtn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #fb8c00, #e65100);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: opacity 0.2s;
+    }
+
+    button#calcBtn:hover { opacity: 0.9; }
+
+    .results { display: none; }
+
+    .results h2 {
+      font-size: 1.1rem;
+      color: #2e7d32;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #c8e6c9;
+      padding-bottom: 8px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .result-box {
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      border: 1.5px solid #eee;
+    }
+
+    .result-box .value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #e65100;
+    }
+
+    .result-box .unit {
+      font-size: 0.78rem;
+      color: #888;
+    }
+
+    .result-box .label {
+      font-size: 0.82rem;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    .breakdown {
+      background: #f1f8e9;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-size: 0.88rem;
+      color: #444;
+      line-height: 1.8;
+      border-left: 4px solid #66bb6a;
+    }
+
+    .breakdown b { color: #2e7d32; }
+
+    .cost-box {
+      background: #fff3e0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 14px;
+      font-size: 0.88rem;
+      color: #444;
+      line-height: 1.8;
+      border-left: 4px solid #fb8c00;
+    }
+
+    .cost-box b { color: #e65100; }
+
+    .note {
+      font-size: 0.78rem;
+      color: #999;
+      text-align: center;
+      margin-top: 18px;
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 10px;
+      background: #f5f5f5;
+      color: #555;
+      font-size: 0.9rem;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 14px;
+    }
+
+    .reset-btn:hover { background: #eee; }
+
+    footer {
+      font-size: 0.75rem;
+      color: #bbb;
+      margin-top: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="sun-icon">☀️</div>
+  <h1>Solar System Calculator</h1>
+  <p>Philippines — Residential Solar Sizing Tool</p>
+</header>
+
+<!-- INPUT CARD -->
+<div class="card">
+  <h2>Enter Your Details</h2>
+
+  <div class="field">
+    <label>Monthly Electricity Consumption <span>(kWh — from your Meralco/utility bill)</span></label>
+    <input type="number" id="monthlyKwh" placeholder="e.g. 250" min="1" />
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label>Peak Sun Hours <span>(hrs/day)</span></label>
+      <select id="sunHours">
+        <option value="4.0">4.0 – Cloudy/Rainy areas</option>
+        <option value="4.5" selected>4.5 – Average PH (default)</option>
+        <option value="5.0">5.0 – Cebu / Davao / Palawan</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Solar Panel Wattage <span>(W/panel)</span></label>
+      <select id="panelWattage">
+        <option value="300">300W</option>
+        <option value="350">350W</option>
+        <option value="400" selected>400W (common)</option>
+        <option value="450">450W</option>
+        <option value="550">550W (premium)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label>System Loss Buffer <span>(%)</span></label>
+      <select id="lossBuffer">
+        <option value="0.15">15%</option>
+        <option value="0.20" selected>20% (recommended)</option>
+        <option value="0.25">25% (high shade/dust)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Solar Offset Goal <span>(%)</span></label>
+      <select id="offset">
+        <option value="0.50">50%</option>
+        <option value="0.70">70%</option>
+        <option value="0.80">80%</option>
+        <option value="1.00" selected>100% (full offset)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Cost per Installed kW <span>(₱)</span></label>
+    <select id="costPerKw">
+      <option value="30000">₱30,000 / kW (low estimate)</option>
+      <option value="40000" selected>₱40,000 / kW (average)</option>
+      <option value="50000">₱50,000 / kW (premium)</option>
+    </select>
+  </div>
+
+  <button id="calcBtn" onclick="calculate()">Calculate Solar System</button>
+</div>
+
+<!-- RESULTS CARD -->
+<div class="card results" id="resultsCard">
+  <h2>✅ Recommended Solar System</h2>
+
+  <div class="result-grid">
+    <div class="result-box">
+      <div class="value" id="res-kw">—</div>
+      <div class="unit">kilowatts</div>
+      <div class="label">System Size (kW)</div>
+    </div>
+    <div class="result-box">
+      <div class="value" id="res-panels">—</div>
+      <div class="unit">panels</div>
+      <div class="label">No. of Solar Panels</div>
+    </div>
+    <div class="result-box">
+      <div class="value" id="res-daily">—</div>
+      <div class="unit">kWh/day</div>
+      <div class="label">Daily Solar Output</div>
+    </div>
+    <div class="result-box">
+      <div class="value" id="res-monthly">—</div>
+      <div class="unit">kWh/month</div>
+      <div class="label">Monthly Solar Output</div>
+    </div>
+  </div>
+
+  <div class="breakdown" id="breakdown-text"></div>
+
+  <div class="cost-box" id="cost-text"></div>
+
+  <p class="note">* Estimates only. Consult a licensed solar installer for exact sizing, inverter specs, battery options, and net metering setup.</p>
+
+  <button class="reset-btn" onclick="resetForm()">← Calculate Again</button>
+</div>
+
+<footer>Data based on DOE Philippines & local solar industry standards.</footer>
+
+<script>
+  function calculate() {
+    const monthlyKwh = parseFloat(document.getElementById('monthlyKwh').value);
+    const sunHours = parseFloat(document.getElementById('sunHours').value);
+    const panelW = parseInt(document.getElementById('panelWattage').value);
+    const loss = parseFloat(document.getElementById('lossBuffer').value);
+    const offset = parseFloat(document.getElementById('offset').value);
+    const costPerKw = parseInt(document.getElementById('costPerKw').value);
+
+    if (!monthlyKwh || monthlyKwh <= 0) {
+      alert('Please enter your monthly kWh consumption.');
+      return;
+    }
+
+    const targetKwh = monthlyKwh * offset;
+    const dailyKwh = targetKwh / 30;
+    const rawKw = dailyKwh / sunHours;
+    const systemKw = rawKw * (1 + loss);
+    const numPanels = Math.ceil((systemKw * 1000) / panelW);
+    const actualKw = (numPanels * panelW) / 1000;
+    const dailyOutput = (actualKw * sunHours).toFixed(1);
+    const monthlyOutput = (dailyOutput * 30).toFixed(0);
+    const totalCost = actualKw * costPerKw;
+    const payback = totalCost / (monthlyKwh * offset * 12 * 10);
+
+    document.getElementById('res-kw').textContent = actualKw.toFixed(2);
+    document.getElementById('res-panels').textContent = numPanels;
+    document.getElementById('res-daily').textContent = dailyOutput;
+    document.getElementById('res-monthly').textContent = monthlyOutput;
+
+    document.getElementById('breakdown-text').innerHTML = `
+      <b>Calculation Breakdown:</b><br>
+      Monthly Consumption: <b>${monthlyKwh} kWh</b><br>
+      Solar Offset Goal: <b>${offset * 100}%</b> → Target: <b>${targetKwh.toFixed(1)} kWh/month</b><br>
+      Daily Target: <b>${dailyKwh.toFixed(2)} kWh/day</b><br>
+      Peak Sun Hours: <b>${sunHours} hrs/day</b><br>
+      Raw System Size: <b>${rawKw.toFixed(2)} kW</b><br>
+      + ${loss * 100}% Loss Buffer: <b>${systemKw.toFixed(2)} kW</b><br>
+      Panel Wattage: <b>${panelW}W × ${numPanels} panels = ${actualKw.toFixed(2)} kW</b>
+    `;
+
+    document.getElementById('cost-text').innerHTML = `
+      <b>Cost Estimate:</b><br>
+      System Size: <b>${actualKw.toFixed(2)} kW</b> × ₱${costPerKw.toLocaleString()}/kW<br>
+      Estimated Total Cost: <b>₱${totalCost.toLocaleString()}</b><br>
+      Estimated Payback Period: <b>~${payback.toFixed(1)} years</b> (at ₱10/kWh grid rate)
+    `;
+
+    document.querySelector('.results').style.display = 'block';
+    document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function resetForm() {
+    document.querySelector('.results').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
