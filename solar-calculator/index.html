@@ -41,50 +41,95 @@
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-      padding: 32px;
+      padding: 28px 32px;
       width: 100%;
-      max-width: 560px;
-      margin-bottom: 24px;
+      max-width: 620px;
+      margin-bottom: 20px;
     }
 
     .card h2 {
-      font-size: 1.1rem;
+      font-size: 1rem;
+      font-weight: 700;
       color: #e65100;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       border-bottom: 2px solid #ffe0b2;
       padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-label {
+      display: inline-block;
+      background: #e65100;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 2px 7px;
+      letter-spacing: 0.5px;
     }
 
     .field {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     label {
       display: block;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       color: #555;
     }
 
     label span {
       font-weight: 400;
-      color: #999;
-      font-size: 0.82rem;
+      color: #aaa;
+      font-size: 0.8rem;
     }
 
-    input, select {
+    input[type="number"], select {
       width: 100%;
       padding: 10px 14px;
       border: 1.5px solid #ddd;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       outline: none;
       transition: border-color 0.2s;
+      background: #fff;
     }
 
-    input:focus, select:focus {
+    input[type="number"]:focus, select:focus {
       border-color: #fb8c00;
+    }
+
+    .input-prefix {
+      position: relative;
+    }
+
+    .input-prefix .prefix {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 0.9rem;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    .input-prefix input {
+      padding-left: 38px;
+    }
+
+    .auto-field {
+      background: #fafafa;
+      border: 1.5px solid #eee;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      color: #888;
+      font-style: italic;
     }
 
     .row {
@@ -94,9 +139,23 @@
 
     .row .field { flex: 1; }
 
+    .row3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .row3 .field { margin-bottom: 0; }
+
+    .divider {
+      border: none;
+      border-top: 1.5px dashed #f0e0c8;
+      margin: 6px 0 20px;
+    }
+
     button#calcBtn {
       width: 100%;
-      padding: 14px;
+      padding: 15px;
       background: linear-gradient(135deg, #fb8c00, #e65100);
       color: #fff;
       font-size: 1.05rem;
@@ -104,62 +163,127 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      margin-top: 6px;
-      transition: opacity 0.2s;
+      margin-top: 4px;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.3px;
     }
 
-    button#calcBtn:hover { opacity: 0.9; }
+    button#calcBtn:hover { opacity: 0.92; }
+    button#calcBtn:active { transform: scale(0.99); }
+
+    /* ── RESULTS ─────────────────────────────────── */
 
     .results { display: none; }
 
-    .results h2 {
-      font-size: 1.1rem;
+    .results-header {
+      font-size: 1rem;
+      font-weight: 700;
       color: #2e7d32;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       border-bottom: 2px solid #c8e6c9;
       padding-bottom: 8px;
     }
 
-    .result-grid {
+    /* system stats grid */
+    .stats-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 20px;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
     }
 
-    .result-box {
+    .stat-box {
       background: #f9f9f9;
       border-radius: 10px;
-      padding: 16px;
+      padding: 14px 10px;
       text-align: center;
       border: 1.5px solid #eee;
     }
 
-    .result-box .value {
-      font-size: 1.6rem;
+    .stat-box .val {
+      font-size: 1.45rem;
       font-weight: 800;
       color: #e65100;
+      line-height: 1.1;
     }
 
-    .result-box .unit {
+    .stat-box .unit {
+      font-size: 0.72rem;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
+    .stat-box .lbl {
+      font-size: 0.75rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    /* Big highlight cards */
+    .highlight-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .highlight-box {
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .highlight-box.cost {
+      background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+      border: 2px solid #fb8c00;
+    }
+
+    .highlight-box.savings {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      border: 2px solid #43a047;
+    }
+
+    .highlight-box .hl-icon {
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+
+    .highlight-box .hl-label {
       font-size: 0.78rem;
-      color: #888;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
-    .result-box .label {
-      font-size: 0.82rem;
-      color: #555;
+    .highlight-box.cost .hl-label { color: #bf360c; }
+    .highlight-box.savings .hl-label { color: #1b5e20; }
+
+    .highlight-box .hl-value {
+      font-size: 1.65rem;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .highlight-box.cost .hl-value { color: #e65100; }
+    .highlight-box.savings .hl-value { color: #2e7d32; }
+
+    .highlight-box .hl-sub {
+      font-size: 0.75rem;
+      color: #777;
       margin-top: 4px;
     }
 
+    /* breakdown boxes */
     .breakdown {
       background: #f1f8e9;
       border-radius: 10px;
       padding: 16px 20px;
-      font-size: 0.88rem;
+      font-size: 0.855rem;
       color: #444;
-      line-height: 1.8;
+      line-height: 1.9;
       border-left: 4px solid #66bb6a;
+      margin-bottom: 14px;
     }
 
     .breakdown b { color: #2e7d32; }
@@ -168,25 +292,73 @@
       background: #fff3e0;
       border-radius: 10px;
       padding: 16px 20px;
-      margin-top: 14px;
-      font-size: 0.88rem;
+      margin-bottom: 14px;
+      font-size: 0.855rem;
       color: #444;
-      line-height: 1.8;
+      line-height: 1.9;
       border-left: 4px solid #fb8c00;
     }
 
     .cost-box b { color: #e65100; }
 
-    .note {
+    .savings-box {
+      background: #e8f5e9;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      font-size: 0.855rem;
+      color: #444;
+      line-height: 1.9;
+      border-left: 4px solid #43a047;
+    }
+
+    .savings-box b { color: #1b5e20; }
+
+    /* savings table */
+    .savings-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.845rem;
+      margin-top: 8px;
+    }
+
+    .savings-table th {
+      background: #dcedc8;
+      color: #33691e;
+      padding: 7px 10px;
+      text-align: left;
       font-size: 0.78rem;
-      color: #999;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .savings-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e8f5e9;
+      color: #444;
+    }
+
+    .savings-table tr:last-child td { border-bottom: none; }
+    .savings-table tr:nth-child(even) td { background: #f9fbe7; }
+
+    .savings-table td.money {
+      font-weight: 700;
+      color: #2e7d32;
+      text-align: right;
+    }
+
+    .note {
+      font-size: 0.76rem;
+      color: #aaa;
       text-align: center;
-      margin-top: 18px;
+      margin-top: 14px;
+      line-height: 1.5;
     }
 
     .reset-btn {
       width: 100%;
-      padding: 10px;
+      padding: 11px;
       background: #f5f5f5;
       color: #555;
       font-size: 0.9rem;
@@ -194,6 +366,7 @@
       border-radius: 8px;
       cursor: pointer;
       margin-top: 14px;
+      transition: background 0.15s;
     }
 
     .reset-btn:hover { background: #eee; }
@@ -201,8 +374,15 @@
     footer {
       font-size: 0.75rem;
       color: #bbb;
-      margin-top: 12px;
+      margin-top: 8px;
       text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .row3 { grid-template-columns: 1fr; }
+      .highlight-row { grid-template-columns: 1fr; }
+      .highlight-box .hl-value { font-size: 1.4rem; }
     }
   </style>
 </head>
@@ -211,24 +391,75 @@
 <header>
   <div class="sun-icon">☀️</div>
   <h1>Solar System Calculator</h1>
-  <p>Philippines — Residential Solar Sizing Tool</p>
+  <p>Philippines — Cost, Sizing & Savings Estimator</p>
 </header>
 
-<!-- INPUT CARD -->
+<!-- ── INPUT CARD ─────────────────────────────────── -->
 <div class="card">
-  <h2>Enter Your Details</h2>
+
+  <!-- SECTION A: Electricity Details -->
+  <h2><span class="section-label">A</span> Your Electricity Details</h2>
+
+  <div class="row">
+    <div class="field">
+      <label>Monthly Electricity Bill <span>(from your Meralco/utility bill)</span></label>
+      <div class="input-prefix">
+        <span class="prefix">₱</span>
+        <input type="number" id="monthlyBill" placeholder="e.g. 3,500" min="1" oninput="autoCalcRate()" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Monthly Consumption <span>(kWh)</span></label>
+      <input type="number" id="monthlyKwh" placeholder="e.g. 300" min="1" oninput="autoCalcRate()" />
+    </div>
+  </div>
 
   <div class="field">
-    <label>Monthly Electricity Consumption <span>(kWh — from your Meralco/utility bill)</span></label>
-    <input type="number" id="monthlyKwh" placeholder="e.g. 250" min="1" />
+    <label>Estimated Rate <span>(auto-calculated from bill ÷ kWh)</span></label>
+    <div class="auto-field" id="rateDisplay">— Enter bill and kWh above to auto-calculate</div>
   </div>
+
+  <hr class="divider">
+
+  <div class="row3">
+    <div class="field">
+      <label>Operational Days/Week <span>(days)</span></label>
+      <select id="opDays">
+        <option value="4">4 days</option>
+        <option value="5">5 days</option>
+        <option value="6">6 days</option>
+        <option value="7" selected>7 days</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Hours Active (6am–6pm) <span>(hrs)</span></label>
+      <select id="opHours">
+        <option value="4">4 hrs</option>
+        <option value="6">6 hrs</option>
+        <option value="8">8 hrs</option>
+        <option value="10">10 hrs</option>
+        <option value="12" selected>12 hrs</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Usage Pattern</label>
+      <select id="opPattern">
+        <option value="0.30">Mostly Night</option>
+        <option value="0.50" selected>Day & Night</option>
+        <option value="0.85">Mostly Daytime</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- SECTION B: Solar System Options -->
+  <h2 style="margin-top:10px;"><span class="section-label">B</span> Solar System Options</h2>
 
   <div class="row">
     <div class="field">
       <label>Peak Sun Hours <span>(hrs/day)</span></label>
       <select id="sunHours">
         <option value="4.0">4.0 – Cloudy/Rainy areas</option>
-        <option value="4.5" selected>4.5 – Average PH (default)</option>
+        <option value="4.5" selected>4.5 – Average PH</option>
         <option value="5.0">5.0 – Cebu / Davao / Palawan</option>
       </select>
     </div>
@@ -265,101 +496,247 @@
   </div>
 
   <div class="field">
-    <label>Cost per Installed kW <span>(₱)</span></label>
+    <label>Installation Cost Estimate <span>(₱ per installed kW)</span></label>
     <select id="costPerKw">
-      <option value="30000">₱30,000 / kW (low estimate)</option>
-      <option value="40000" selected>₱40,000 / kW (average)</option>
-      <option value="50000">₱50,000 / kW (premium)</option>
+      <option value="30000">₱30,000 / kW — Budget / DIY-assisted</option>
+      <option value="40000" selected>₱40,000 / kW — Standard (average PH)</option>
+      <option value="50000">₱50,000 / kW — Premium / Tier-1 brand</option>
+      <option value="60000">₱60,000 / kW — Commercial grade</option>
     </select>
   </div>
 
-  <button id="calcBtn" onclick="calculate()">Calculate Solar System</button>
+  <button id="calcBtn" onclick="calculate()">⚡ Calculate Cost & Savings</button>
 </div>
 
-<!-- RESULTS CARD -->
+<!-- ── RESULTS CARD ───────────────────────────────── -->
 <div class="card results" id="resultsCard">
-  <h2>✅ Recommended Solar System</h2>
+  <div class="results-header">✅ Your Solar System Estimate</div>
 
-  <div class="result-grid">
-    <div class="result-box">
-      <div class="value" id="res-kw">—</div>
+  <!-- System specs -->
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="val" id="res-kw">—</div>
       <div class="unit">kilowatts</div>
-      <div class="label">System Size (kW)</div>
+      <div class="lbl">System Size</div>
     </div>
-    <div class="result-box">
-      <div class="value" id="res-panels">—</div>
+    <div class="stat-box">
+      <div class="val" id="res-panels">—</div>
       <div class="unit">panels</div>
-      <div class="label">No. of Solar Panels</div>
+      <div class="lbl">No. of Panels</div>
     </div>
-    <div class="result-box">
-      <div class="value" id="res-daily">—</div>
+    <div class="stat-box">
+      <div class="val" id="res-daily">—</div>
       <div class="unit">kWh/day</div>
-      <div class="label">Daily Solar Output</div>
+      <div class="lbl">Daily Output</div>
     </div>
-    <div class="result-box">
-      <div class="value" id="res-monthly">—</div>
+    <div class="stat-box">
+      <div class="val" id="res-monthly">—</div>
       <div class="unit">kWh/month</div>
-      <div class="label">Monthly Solar Output</div>
+      <div class="lbl">Monthly Output</div>
     </div>
   </div>
 
+  <!-- Big highlights: Cost & Savings -->
+  <div class="highlight-row">
+    <div class="highlight-box cost">
+      <div class="hl-icon">💰</div>
+      <div class="hl-label">Installation Quote</div>
+      <div class="hl-value" id="res-cost">—</div>
+      <div class="hl-sub" id="res-cost-sub">—</div>
+    </div>
+    <div class="highlight-box savings">
+      <div class="hl-icon">📈</div>
+      <div class="hl-label">Monthly Savings</div>
+      <div class="hl-value" id="res-monthly-savings">—</div>
+      <div class="hl-sub" id="res-monthly-savings-sub">—</div>
+    </div>
+  </div>
+
+  <!-- Calculation breakdown -->
   <div class="breakdown" id="breakdown-text"></div>
 
+  <!-- Cost breakdown -->
   <div class="cost-box" id="cost-text"></div>
 
-  <p class="note">* Estimates only. Consult a licensed solar installer for exact sizing, inverter specs, battery options, and net metering setup.</p>
+  <!-- Savings table -->
+  <div class="savings-box" id="savings-text"></div>
 
-  <button class="reset-btn" onclick="resetForm()">← Calculate Again</button>
+  <p class="note">* Estimates only. Actual costs and savings vary with shading, panel brand, inverter type, net metering setup, and utility rates. Consult a licensed solar installer for a formal quotation.</p>
+
+  <button class="reset-btn" onclick="resetForm()">← Recalculate</button>
 </div>
 
-<footer>Data based on DOE Philippines & local solar industry standards.</footer>
+<footer>Data based on DOE Philippines &amp; local solar industry standards. Performance ratio 75%.</footer>
 
 <script>
+  function autoCalcRate() {
+    const bill = parseFloat(document.getElementById('monthlyBill').value);
+    const kwh  = parseFloat(document.getElementById('monthlyKwh').value);
+    const el   = document.getElementById('rateDisplay');
+    if (bill > 0 && kwh > 0) {
+      const rate = bill / kwh;
+      el.textContent = '₱' + rate.toFixed(2) + ' / kWh  (₱' + bill.toLocaleString() + ' ÷ ' + kwh + ' kWh)';
+      el.style.color = '#2e7d32';
+      el.style.fontStyle = 'normal';
+      el.style.fontWeight = '600';
+    } else {
+      el.textContent = '— Enter bill and kWh above to auto-calculate';
+      el.style.color = '';
+      el.style.fontStyle = 'italic';
+      el.style.fontWeight = '';
+    }
+  }
+
+  function fmt(n) {
+    return '₱' + Math.round(n).toLocaleString();
+  }
+
   function calculate() {
-    const monthlyKwh = parseFloat(document.getElementById('monthlyKwh').value);
-    const sunHours = parseFloat(document.getElementById('sunHours').value);
-    const panelW = parseInt(document.getElementById('panelWattage').value);
-    const loss = parseFloat(document.getElementById('lossBuffer').value);
-    const offset = parseFloat(document.getElementById('offset').value);
-    const costPerKw = parseInt(document.getElementById('costPerKw').value);
+    const monthlyBill = parseFloat(document.getElementById('monthlyBill').value) || 0;
+    const monthlyKwh  = parseFloat(document.getElementById('monthlyKwh').value);
+    const opDays      = parseInt(document.getElementById('opDays').value);
+    const opHours     = parseInt(document.getElementById('opHours').value);
+    const opPattern   = parseFloat(document.getElementById('opPattern').value);
+    const sunHours    = parseFloat(document.getElementById('sunHours').value);
+    const panelW      = parseInt(document.getElementById('panelWattage').value);
+    const loss        = parseFloat(document.getElementById('lossBuffer').value);
+    const offset      = parseFloat(document.getElementById('offset').value);
+    const costPerKw   = parseInt(document.getElementById('costPerKw').value);
 
     if (!monthlyKwh || monthlyKwh <= 0) {
       alert('Please enter your monthly kWh consumption.');
       return;
     }
 
-    const targetKwh = monthlyKwh * offset;
-    const dailyKwh = targetKwh / 30;
-    const rawKw = dailyKwh / sunHours;
-    const systemKw = rawKw * (1 + loss);
-    const numPanels = Math.ceil((systemKw * 1000) / panelW);
-    const actualKw = (numPanels * panelW) / 1000;
-    const dailyOutput = (actualKw * sunHours).toFixed(1);
-    const monthlyOutput = (dailyOutput * 30).toFixed(0);
-    const totalCost = actualKw * costPerKw;
-    const payback = totalCost / (monthlyKwh * offset * 12 * 10);
+    // PHP per kWh — use user bill if provided, else default to ₱10/kWh
+    const phpPerKwh = (monthlyBill > 0 && monthlyKwh > 0)
+      ? monthlyBill / monthlyKwh
+      : 10;
+    const hasBill = monthlyBill > 0;
 
-    document.getElementById('res-kw').textContent = actualKw.toFixed(2);
-    document.getElementById('res-panels').textContent = numPanels;
-    document.getElementById('res-daily').textContent = dailyOutput;
+    // ── SIZING ──────────────────────────────────────
+    // Standard formula: target kWh ÷ (sun hours × days)
+    const opDaysPerMonth = opDays * 4.33;   // avg weeks/month = 4.33
+    const targetKwh      = monthlyKwh * offset;
+    const dailyTarget    = targetKwh / opDaysPerMonth;
+    const rawKw          = dailyTarget / sunHours;
+    const systemKw       = rawKw * (1 + loss);
+
+    // SolarNRG formula for cross-check (accounts for day/night split)
+    const solarNrgKw = (monthlyKwh / (opDays * 4.2)) * opPattern / opHours / 0.85;
+
+    // Final recommended: blend (average) of both approaches
+    const blendedKw    = (systemKw + solarNrgKw) / 2;
+    const numPanels    = Math.ceil((blendedKw * 1000) / panelW);
+    const actualKw     = (numPanels * panelW) / 1000;
+
+    // ── OUTPUTS ─────────────────────────────────────
+    const perfRatio      = 0.75;
+    const dailyOutput    = (actualKw * sunHours * perfRatio).toFixed(1);
+    const monthlyOutput  = (parseFloat(dailyOutput) * opDaysPerMonth).toFixed(0);
+
+    // ── COST ────────────────────────────────────────
+    const totalCost      = actualKw * costPerKw;
+
+    // ── SAVINGS ─────────────────────────────────────
+    const monthlySavings = Math.min(parseFloat(monthlyOutput), targetKwh) * phpPerKwh;
+    const annualSavings  = monthlySavings * 12;
+    const payback        = totalCost / annualSavings;
+    const savings10yr    = annualSavings * 10 - totalCost;
+    const savings25yr    = annualSavings * 25 - totalCost;
+    const billReduction  = hasBill ? (monthlySavings / monthlyBill * 100).toFixed(0) : null;
+
+    // ── UPDATE DOM ───────────────────────────────────
+    document.getElementById('res-kw').textContent      = actualKw.toFixed(2);
+    document.getElementById('res-panels').textContent  = numPanels;
+    document.getElementById('res-daily').textContent   = dailyOutput;
     document.getElementById('res-monthly').textContent = monthlyOutput;
 
+    // Cost highlight
+    document.getElementById('res-cost').textContent     = fmt(totalCost);
+    document.getElementById('res-cost-sub').textContent =
+      actualKw.toFixed(2) + ' kW × ₱' + costPerKw.toLocaleString() + '/kW';
+
+    // Savings highlight
+    document.getElementById('res-monthly-savings').textContent     = fmt(monthlySavings) + '/mo';
+    document.getElementById('res-monthly-savings-sub').textContent =
+      hasBill
+        ? billReduction + '% of your monthly bill'
+        : 'based on ₱10/kWh grid rate';
+
+    // Calculation breakdown
     document.getElementById('breakdown-text').innerHTML = `
-      <b>Calculation Breakdown:</b><br>
-      Monthly Consumption: <b>${monthlyKwh} kWh</b><br>
-      Solar Offset Goal: <b>${offset * 100}%</b> → Target: <b>${targetKwh.toFixed(1)} kWh/month</b><br>
-      Daily Target: <b>${dailyKwh.toFixed(2)} kWh/day</b><br>
-      Peak Sun Hours: <b>${sunHours} hrs/day</b><br>
-      Raw System Size: <b>${rawKw.toFixed(2)} kW</b><br>
-      + ${loss * 100}% Loss Buffer: <b>${systemKw.toFixed(2)} kW</b><br>
-      Panel Wattage: <b>${panelW}W × ${numPanels} panels = ${actualKw.toFixed(2)} kW</b>
+      <b>System Sizing Breakdown:</b><br>
+      Monthly Consumption: <b>${monthlyKwh.toLocaleString()} kWh</b>
+        &nbsp;|&nbsp; Solar Offset: <b>${offset * 100}%</b>
+        &nbsp;→&nbsp; Target: <b>${targetKwh.toFixed(0)} kWh/month</b><br>
+      Operational Days: <b>${opDays} days/week</b> (${opDaysPerMonth.toFixed(1)} days/month)
+        &nbsp;|&nbsp; Usage Pattern: <b>${opPattern === 0.30 ? 'Mostly Night' : opPattern === 0.85 ? 'Mostly Daytime' : 'Day & Night'}</b><br>
+      Standard sizing: <b>${systemKw.toFixed(2)} kW</b>
+        &nbsp;|&nbsp; Usage-pattern sizing: <b>${solarNrgKw.toFixed(2)} kW</b>
+        &nbsp;→&nbsp; Blended: <b>${blendedKw.toFixed(2)} kW</b><br>
+      Peak Sun Hours: <b>${sunHours} hrs/day</b>
+        &nbsp;|&nbsp; Loss Buffer: <b>${loss * 100}%</b>
+        &nbsp;|&nbsp; Performance Ratio: <b>75%</b><br>
+      Panel: <b>${panelW}W × ${numPanels} panels = ${actualKw.toFixed(2)} kW actual</b>
     `;
 
+    // Cost breakdown
     document.getElementById('cost-text').innerHTML = `
-      <b>Cost Estimate:</b><br>
-      System Size: <b>${actualKw.toFixed(2)} kW</b> × ₱${costPerKw.toLocaleString()}/kW<br>
-      Estimated Total Cost: <b>₱${totalCost.toLocaleString()}</b><br>
-      Estimated Payback Period: <b>~${payback.toFixed(1)} years</b> (at ₱10/kWh grid rate)
+      <b>Installation Cost Quote:</b><br>
+      System Size: <b>${actualKw.toFixed(2)} kW</b>
+        &nbsp;×&nbsp; <b>₱${costPerKw.toLocaleString()}/kW</b><br>
+      <b style="font-size:1.05rem;">Estimated Total: ₱${Math.round(totalCost).toLocaleString()}</b>
+        &nbsp;(${numPanels} panels + inverter + installation)<br>
+      <span style="color:#aaa;font-size:0.8rem;">
+        ₱30k/kW = budget system &nbsp;|&nbsp; ₱40k/kW = standard &nbsp;|&nbsp; ₱50–60k/kW = premium/commercial
+      </span>
+    `;
+
+    // Savings table
+    document.getElementById('savings-text').innerHTML = `
+      <b>Financial Returns</b>
+      ${hasBill ? `&nbsp;— based on your rate of <b>₱${phpPerKwh.toFixed(2)}/kWh</b>` : '&nbsp;— based on <b>₱10/kWh</b> estimated rate'}<br><br>
+      <table class="savings-table">
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th style="text-align:right;">Savings</th>
+            <th style="text-align:right;">Net Gain (after install cost)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Per Month</td>
+            <td class="money">${fmt(monthlySavings)}</td>
+            <td class="money" style="color:#888;">—</td>
+          </tr>
+          <tr>
+            <td>Per Year</td>
+            <td class="money">${fmt(annualSavings)}</td>
+            <td class="money" style="color:#888;">—</td>
+          </tr>
+          <tr>
+            <td>Payback Period</td>
+            <td class="money" style="color:#e65100;">${payback.toFixed(1)} years</td>
+            <td class="money" style="color:#e65100;">Break-even at ${payback.toFixed(1)} yrs</td>
+          </tr>
+          <tr>
+            <td>After 10 Years</td>
+            <td class="money">${fmt(annualSavings * 10)}</td>
+            <td class="money" style="${savings10yr >= 0 ? 'color:#2e7d32' : 'color:#c62828'}">
+              ${savings10yr >= 0 ? '+' : ''}${fmt(savings10yr)}
+            </td>
+          </tr>
+          <tr>
+            <td>After 25 Years</td>
+            <td class="money">${fmt(annualSavings * 25)}</td>
+            <td class="money" style="${savings25yr >= 0 ? 'color:#2e7d32' : 'color:#c62828'}">
+              ${savings25yr >= 0 ? '+' : ''}${fmt(savings25yr)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     `;
 
     document.querySelector('.results').style.display = 'block';
