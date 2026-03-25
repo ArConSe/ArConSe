@@ -458,7 +458,9 @@
     <div class="field">
       <label>Peak Sun Hours <span>(hrs/day)</span></label>
       <select id="sunHours">
-        <option value="4.0">4.0 – Cloudy/Rainy areas</option>
+        <option value="3.0">3.0 – Heavy cloud / typhoon season</option>
+        <option value="3.5">3.5 – Overcast / mountainous areas</option>
+        <option value="4.0">4.0 – Cloudy / rainy areas</option>
         <option value="4.5" selected>4.5 – Average PH</option>
         <option value="5.0">5.0 – Cebu / Davao / Palawan</option>
       </select>
@@ -468,9 +470,12 @@
       <select id="panelWattage">
         <option value="300">300W</option>
         <option value="350">350W</option>
-        <option value="400" selected>400W (common)</option>
+        <option value="400">400W (standard)</option>
         <option value="450">450W</option>
-        <option value="550">550W (premium)</option>
+        <option value="500" selected>500W (most common 2025)</option>
+        <option value="550">550W</option>
+        <option value="600">600W (Tier-1 N-Type)</option>
+        <option value="650">650W (commercial)</option>
       </select>
     </div>
   </div>
@@ -487,6 +492,7 @@
     <div class="field">
       <label>Solar Offset Goal <span>(%)</span></label>
       <select id="offset">
+        <option value="0.30">30% (trial / partial)</option>
         <option value="0.50">50%</option>
         <option value="0.70">70%</option>
         <option value="0.80">80%</option>
@@ -498,10 +504,10 @@
   <div class="field">
     <label>Installation Cost Estimate <span>(₱ per installed kW)</span></label>
     <select id="costPerKw">
-      <option value="30000">₱30,000 / kW — Budget / DIY-assisted</option>
-      <option value="40000" selected>₱40,000 / kW — Standard (average PH)</option>
-      <option value="50000">₱50,000 / kW — Premium / Tier-1 brand</option>
-      <option value="60000">₱60,000 / kW — Commercial grade</option>
+      <option value="35000">₱35,000 / kW — Budget / DIY-assisted</option>
+      <option value="45000" selected>₱45,000 / kW — Standard Residential (avg PH 2025)</option>
+      <option value="55000">₱55,000 / kW — Premium / Tier-1 brand</option>
+      <option value="65000">₱65,000 / kW — Turnkey / commercial grade</option>
     </select>
   </div>
 
@@ -566,7 +572,7 @@
   <button class="reset-btn" onclick="resetForm()">← Recalculate</button>
 </div>
 
-<footer>Data based on DOE Philippines &amp; local solar industry standards. Performance ratio 75%.</footer>
+<footer>Data based on DOE Philippines, SolarLab.ph, Buskowitz Energy &amp; PH solar industry benchmarks (2025). Performance ratio 75%.</footer>
 
 <script>
   function autoCalcRate() {
@@ -689,7 +695,7 @@
       <b style="font-size:1.05rem;">Estimated Total: ₱${Math.round(totalCost).toLocaleString()}</b>
         &nbsp;(${numPanels} panels + inverter + installation)<br>
       <span style="color:#aaa;font-size:0.8rem;">
-        ₱30k/kW = budget system &nbsp;|&nbsp; ₱40k/kW = standard &nbsp;|&nbsp; ₱50–60k/kW = premium/commercial
+        ₱35k/kW = budget &nbsp;|&nbsp; ₱45k/kW = standard (PH avg 2025) &nbsp;|&nbsp; ₱55–65k/kW = premium/commercial
       </span>
     `;
 
