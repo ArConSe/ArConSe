@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solar Site Survey – ArConSe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #fff8f0, #fff3e8);
+      min-height: 100vh;
+      padding: 32px 16px 60px;
+      color: #1a1a1a;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .page-header .icon {
+      font-size: 52px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .page-header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #e65100;
+      line-height: 1.2;
+    }
+    .page-header p {
+      color: #666;
+      font-size: 0.92rem;
+      margin-top: 6px;
+    }
+
+    /* ── Progress Bar ── */
+    .progress-wrap {
+      max-width: 640px;
+      margin: 0 auto 28px;
+    }
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .progress-labels span {
+      font-size: 0.7rem;
+      color: #aaa;
+      font-weight: 500;
+      transition: color .3s;
+    }
+    .progress-labels span.active { color: #f97316; font-weight: 600; }
+    .progress-labels span.done  { color: #4caf50; }
+    .progress-bar-bg {
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #ff6b00);
+      border-radius: 4px;
+      transition: width .4s ease;
+    }
+    .step-counter {
+      text-align: right;
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 28px rgba(0,0,0,0.09);
+      padding: 30px 32px;
+      max-width: 640px;
+      margin: 0 auto 20px;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e65100;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h2 i { font-size: 1rem; }
+    .card .section-desc {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 22px;
+    }
+
+    /* ── Step visibility ── */
+    .step { display: none; }
+    .step.active { display: block; }
+
+    /* ── Form fields ── */
+    .field {
+      margin-bottom: 18px;
+    }
+    .field label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 5px;
+    }
+    .field label .req { color: #f97316; }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      color: #222;
+      background: #fafafa;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+      background: #fff;
+    }
+    .field textarea { resize: vertical; min-height: 90px; }
+    .field select { cursor: pointer; }
+
+    .field .hint {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 4px;
+    }
+    .field.error input,
+    .field.error select,
+    .field.error textarea {
+      border-color: #e53935;
+    }
+    .field .err-msg {
+      font-size: 0.75rem;
+      color: #e53935;
+      margin-top: 3px;
+      display: none;
+    }
+    .field.error .err-msg { display: block; }
+
+    /* ── Two-column grid ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 18px;
+    }
+
+    /* ── Radio / Checkbox pills ── */
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .pill-group input[type="radio"],
+    .pill-group input[type="checkbox"] {
+      display: none;
+    }
+    .pill-group label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #555;
+      cursor: pointer;
+      transition: all .2s;
+      background: #fafafa;
+      user-select: none;
+      /* override default label styles from .field label */
+      margin-bottom: 0;
+    }
+    .pill-group input[type="radio"]:checked + label,
+    .pill-group input[type="checkbox"]:checked + label {
+      background: #f97316;
+      border-color: #f97316;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(249,115,22,.3);
+    }
+    .pill-group label:hover {
+      border-color: #f97316;
+      color: #f97316;
+    }
+    .pill-group input[type="radio"]:checked + label:hover,
+    .pill-group input[type="checkbox"]:checked + label:hover {
+      color: #fff;
+    }
+
+    /* ── Range slider ── */
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .range-wrap input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 4px;
+      background: #e0e0e0;
+      outline: none;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+    }
+    .range-wrap input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #f97316;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(249,115,22,.4);
+    }
+    .range-val {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f97316;
+      min-width: 48px;
+      text-align: right;
+    }
+
+    /* ── Info banner ── */
+    .info-box {
+      background: #fff8f0;
+      border-left: 4px solid #f97316;
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: #555;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .info-box strong { color: #e65100; }
+
+    /* ── Summary review ── */
+    .summary-grid {
+      display: grid;
+      gap: 6px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 8px 12px;
+      background: #fafafa;
+      border-radius: 8px;
+      font-size: 0.83rem;
+      gap: 12px;
+    }
+    .summary-row .s-label { color: #888; font-weight: 500; flex-shrink: 0; }
+    .summary-row .s-val  { color: #222; font-weight: 600; text-align: right; }
+
+    /* ── Buttons ── */
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .btn {
+      padding: 12px 28px;
+      border-radius: 50px;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #f97316, #e65100);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(249,115,22,.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(249,115,22,.45);
+    }
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #555;
+    }
+    .btn-secondary:hover { background: #e4e4e4; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+    /* ── Submit success (hidden initially) ── */
+    .submit-success {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .submit-success .check { font-size: 56px; color: #4caf50; margin-bottom: 12px; }
+    .submit-success h3 { font-size: 1.3rem; color: #222; margin-bottom: 8px; }
+    .submit-success p { font-size: 0.88rem; color: #666; }
+
+    /* ── Back to site link ── */
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: #f97316;
+      text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      .card { padding: 22px 18px; }
+      .grid-2 { grid-template-columns: 1fr; gap: 0; }
+      .page-header h1 { font-size: 1.5rem; }
+      .btn { padding: 11px 20px; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <span class="icon">☀️</span>
+    <h1>Solar Site Survey</h1>
+    <p>Help us design the perfect solar system for your property.</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-labels">
+      <span id="lbl-1" class="active">Contact</span>
+      <span id="lbl-2">Property</span>
+      <span id="lbl-3">Electrical</span>
+      <span id="lbl-4">Preferences</span>
+      <span id="lbl-5">Review</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill" style="width:20%"></div>
+    </div>
+    <div class="step-counter" id="step-counter">Step 1 of 5</div>
+  </div>
+
+  <!-- ───────────── FORM ───────────── -->
+  <form id="survey-form"
+        action="https://formsubmit.co/arconse.ic@gmail.com"
+        method="POST">
+
+    <!-- FormSubmit hidden fields -->
+    <input type="hidden" name="_subject" value="New Solar Site Survey Submission">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_next" value="../thankyou.html">
+
+    <!-- ══ STEP 1: Contact Info ══ -->
+    <div class="card step active" id="step-1">
+      <h2><i class="fa-solid fa-user"></i> Contact Information</h2>
+      <p class="section-desc">Tell us who you are and how to reach you.</p>
+
+      <div class="grid-2">
+        <div class="field" id="f-firstname">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" name="First Name" placeholder="Juan" autocomplete="given-name">
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field" id="f-lastname">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" name="Last Name" placeholder="Dela Cruz" autocomplete="family-name">
+          <span class="err-msg">Required</span>
+        </div>
+      </div>
+
+      <div class="field" id="f-email">
+        <label>Email Address <span class="req">*</span></label>
+        <input type="email" name="Email" placeholder="juan@email.com" autocomplete="email">
+        <span class="err-msg">Enter a valid email</span>
+      </div>
+
+      <div class="field" id="f-phone">
+        <label>Mobile Number <span class="req">*</span></label>
+        <input type="tel" name="Mobile Number" placeholder="09XX XXX XXXX" autocomplete="tel">
+        <span class="err-msg">Required</span>
+      </div>
+
+      <div class="field" id="f-address">
+        <label>Property Address <span class="req">*</span></label>
+        <input type="text" name="Property Address" placeholder="Street, Barangay, City, Province" autocomplete="street-address">
+        <span class="err-msg">Required</span>
+      </div>
+
+      <div class="field">
+        <label>How did you hear about us?</label>
+        <select name="Referral Source">
+          <option value="">— Select —</option>
+          <option>Facebook / Social Media</option>
+          <option>Friend / Family Referral</option>
+          <option>Google Search</option>
+          <option>Walk-in / Signage</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <span></span>
+        <button type="button" class="btn btn-primary" onclick="nextStep(1)">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 2: Property Details ══ -->
+    <div class="card step" id="step-2">
+      <h2><i class="fa-solid fa-house"></i> Property Details</h2>
+      <p class="section-desc">Information about your roof and building type.</p>
+
+      <div class="field">
+        <label>Property Type <span class="req">*</span></label>
+        <div class="pill-group" id="f-proptype">
+          <input type="radio" name="Property Type" id="pt-res" value="Residential" checked>
+          <label for="pt-res"><i class="fa-solid fa-house-chimney"></i> Residential</label>
+          <input type="radio" name="Property Type" id="pt-com" value="Commercial">
+          <label for="pt-com"><i class="fa-solid fa-building"></i> Commercial</label>
+          <input type="radio" name="Property Type" id="pt-ind" value="Industrial">
+          <label for="pt-ind"><i class="fa-solid fa-industry"></i> Industrial</label>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field" id="f-rooftype">
+          <label>Roof Type <span class="req">*</span></label>
+          <select name="Roof Type">
+            <option value="">— Select —</option>
+            <option>Concrete / Flat</option>
+            <option>Metal Sheet (G.I.)</option>
+            <option>Clay / Concrete Tile</option>
+            <option>Asphalt Shingle</option>
+            <option>Mixed</option>
+          </select>
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field" id="f-roofage">
+          <label>Roof Age (years)</label>
+          <input type="number" name="Roof Age (years)" placeholder="e.g. 5" min="0" max="100">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Roof Condition</label>
+        <div class="pill-group">
+          <input type="radio" name="Roof Condition" id="rc-good" value="Good" checked>
+          <label for="rc-good">Good</label>
+          <input type="radio" name="Roof Condition" id="rc-fair" value="Fair">
+          <label for="rc-fair">Fair</label>
+          <input type="radio" name="Roof Condition" id="rc-poor" value="Poor">
+          <label for="rc-poor">Poor / Needs Repair</label>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field" id="f-roofarea">
+          <label>Available Roof Area <span class="req">*</span></label>
+          <input type="number" name="Roof Area (sqm)" placeholder="sqm" min="1">
+          <span class="hint">Approximate usable area</span>
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field">
+          <label>Number of Floors</label>
+          <select name="Number of Floors">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4+">4 or more</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Roof Orientation (main facing direction)</label>
+        <div class="pill-group">
+          <input type="radio" name="Roof Orientation" id="ro-s" value="South" checked>
+          <label for="ro-s">South</label>
+          <input type="radio" name="Roof Orientation" id="ro-n" value="North">
+          <label for="ro-n">North</label>
+          <input type="radio" name="Roof Orientation" id="ro-e" value="East">
+          <label for="ro-e">East</label>
+          <input type="radio" name="Roof Orientation" id="ro-w" value="West">
+          <label for="ro-w">West</label>
+          <input type="radio" name="Roof Orientation" id="ro-m" value="Multiple">
+          <label for="ro-m">Multiple</label>
+        </div>
+        <p class="hint">South-facing roofs typically receive the most sunlight in the Philippines.</p>
+      </div>
+
+      <div class="field">
+        <label>Roof Pitch / Slope</label>
+        <div class="pill-group">
+          <input type="radio" name="Roof Pitch" id="rp-flat" value="Flat (0°–5°)" checked>
+          <label for="rp-flat">Flat (0°–5°)</label>
+          <input type="radio" name="Roof Pitch" id="rp-low" value="Low (5°–15°)">
+          <label for="rp-low">Low (5°–15°)</label>
+          <input type="radio" name="Roof Pitch" id="rp-med" value="Medium (15°–30°)">
+          <label for="rp-med">Medium (15°–30°)</label>
+          <input type="radio" name="Roof Pitch" id="rp-steep" value="Steep (30°+)">
+          <label for="rp-steep">Steep (30°+)</label>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep(2)">
+          <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 3: Electrical Details ══ -->
+    <div class="card step" id="step-3">
+      <h2><i class="fa-solid fa-bolt"></i> Electrical Details</h2>
+      <p class="section-desc">Current electricity usage and panel information.</p>
+
+      <div class="info-box">
+        <strong>Tip:</strong> You can find your monthly kWh and bill amount on your Meralco / utility statement.
+      </div>
+
+      <div class="grid-2">
+        <div class="field" id="f-bill">
+          <label>Monthly Bill (₱) <span class="req">*</span></label>
+          <input type="number" name="Monthly Bill (PHP)" placeholder="e.g. 5000" min="0">
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field" id="f-kwh">
+          <label>Monthly Usage (kWh) <span class="req">*</span></label>
+          <input type="number" name="Monthly Usage (kWh)" placeholder="e.g. 300" min="0">
+          <span class="err-msg">Required</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Electrical Panel Type</label>
+        <div class="pill-group">
+          <input type="radio" name="Panel Type" id="pn-1p" value="Single Phase" checked>
+          <label for="pn-1p">Single Phase</label>
+          <input type="radio" name="Panel Type" id="pn-3p" value="Three Phase">
+          <label for="pn-3p">Three Phase</label>
+          <input type="radio" name="Panel Type" id="pn-unk" value="Unknown">
+          <label for="pn-unk">Unknown</label>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Main Breaker Size (Amperes)</label>
+          <select name="Main Breaker (A)">
+            <option value="">— Select —</option>
+            <option>30A</option>
+            <option>60A</option>
+            <option>100A</option>
+            <option>150A</option>
+            <option>200A</option>
+            <option>Unknown</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Peak Usage Hours</label>
+          <select name="Peak Usage Hours">
+            <option value="">— Select —</option>
+            <option>Daytime (6am–6pm)</option>
+            <option>Evening (6pm–12mn)</option>
+            <option>Both Day &amp; Night</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Main Appliances / High-Consumption Equipment</label>
+        <div class="pill-group">
+          <input type="checkbox" name="Appliances - Aircon" id="ap-ac" value="Air Conditioner">
+          <label for="ap-ac"><i class="fa-solid fa-snowflake"></i> Aircon</label>
+          <input type="checkbox" name="Appliances - Water Heater" id="ap-wh" value="Water Heater">
+          <label for="ap-wh">Water Heater</label>
+          <input type="checkbox" name="Appliances - Refrigerator" id="ap-ref" value="Refrigerator">
+          <label for="ap-ref">Refrigerator</label>
+          <input type="checkbox" name="Appliances - Washing Machine" id="ap-wm" value="Washing Machine">
+          <label for="ap-wm">Washer</label>
+          <input type="checkbox" name="Appliances - EV Charger" id="ap-ev" value="EV Charger">
+          <label for="ap-ev"><i class="fa-solid fa-car"></i> EV Charger</label>
+          <input type="checkbox" name="Appliances - Water Pump" id="ap-wp" value="Water Pump">
+          <label for="ap-wp">Water Pump</label>
+          <input type="checkbox" name="Appliances - CCTV / Security" id="ap-cc" value="CCTV / Security">
+          <label for="ap-cc">CCTV</label>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep(3)">
+          <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextStep(3)">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 4: Solar Preferences & Site Conditions ══ -->
+    <div class="card step" id="step-4">
+      <h2><i class="fa-solid fa-solar-panel"></i> Solar Preferences &amp; Site Conditions</h2>
+      <p class="section-desc">Help us understand your goals and the site environment.</p>
+
+      <div class="field">
+        <label>Preferred System Type</label>
+        <div class="pill-group">
+          <input type="radio" name="System Type" id="st-gt" value="Grid-Tied" checked>
+          <label for="st-gt"><i class="fa-solid fa-plug"></i> Grid-Tied</label>
+          <input type="radio" name="System Type" id="st-hy" value="Hybrid (with Battery)">
+          <label for="st-hy"><i class="fa-solid fa-battery-full"></i> Hybrid</label>
+          <input type="radio" name="System Type" id="st-og" value="Off-Grid">
+          <label for="st-og"><i class="fa-solid fa-sun"></i> Off-Grid</label>
+          <input type="radio" name="System Type" id="st-ns" value="Not Sure">
+          <label for="st-ns">Not Sure</label>
+        </div>
+        <p class="hint">Grid-tied feeds excess power back to the utility. Hybrid adds battery backup.</p>
+      </div>
+
+      <div class="field">
+        <label>Solar Offset Goal</label>
+        <div class="range-wrap">
+          <input type="range" name="Solar Offset Goal" id="offset-range"
+                 min="25" max="100" step="25" value="75"
+                 oninput="document.getElementById('offset-val').textContent=this.value+'%'">
+          <span class="range-val" id="offset-val">75%</span>
+        </div>
+        <p class="hint">How much of your electricity bill you want solar to cover.</p>
+      </div>
+
+      <div class="field">
+        <label>Estimated Budget Range</label>
+        <div class="pill-group">
+          <input type="radio" name="Budget Range" id="bud-1" value="Below ₱150,000">
+          <label for="bud-1">Below ₱150k</label>
+          <input type="radio" name="Budget Range" id="bud-2" value="₱150,000 – ₱300,000" checked>
+          <label for="bud-2">₱150k – ₱300k</label>
+          <input type="radio" name="Budget Range" id="bud-3" value="₱300,000 – ₱500,000">
+          <label for="bud-3">₱300k – ₱500k</label>
+          <input type="radio" name="Budget Range" id="bud-4" value="Above ₱500,000">
+          <label for="bud-4">Above ₱500k</label>
+          <input type="radio" name="Budget Range" id="bud-5" value="Flexible">
+          <label for="bud-5">Flexible</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Desired Installation Timeline</label>
+        <div class="pill-group">
+          <input type="radio" name="Installation Timeline" id="tl-asap" value="ASAP (within 1 month)" checked>
+          <label for="tl-asap">ASAP</label>
+          <input type="radio" name="Installation Timeline" id="tl-3m" value="1–3 months">
+          <label for="tl-3m">1–3 months</label>
+          <input type="radio" name="Installation Timeline" id="tl-6m" value="3–6 months">
+          <label for="tl-6m">3–6 months</label>
+          <input type="radio" name="Installation Timeline" id="tl-exp" value="Just exploring">
+          <label for="tl-exp">Just Exploring</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Shading on Roof</label>
+        <div class="pill-group">
+          <input type="radio" name="Roof Shading" id="sh-none" value="None" checked>
+          <label for="sh-none">None</label>
+          <input type="radio" name="Roof Shading" id="sh-part" value="Partial (trees / antennas)">
+          <label for="sh-part">Partial</label>
+          <input type="radio" name="Roof Shading" id="sh-heavy" value="Heavy (buildings nearby)">
+          <label for="sh-heavy">Heavy</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Region / Location</label>
+        <select name="Region">
+          <option value="">— Select —</option>
+          <option>NCR – Metro Manila</option>
+          <option>Region I – Ilocos</option>
+          <option>Region II – Cagayan Valley</option>
+          <option>Region III – Central Luzon</option>
+          <option>Region IV-A – CALABARZON</option>
+          <option>Region IV-B – MIMAROPA</option>
+          <option>Region V – Bicol</option>
+          <option>Region VI – Western Visayas</option>
+          <option>Region VII – Central Visayas</option>
+          <option>Region VIII – Eastern Visayas</option>
+          <option>Region IX – Zamboanga Peninsula</option>
+          <option>Region X – Northern Mindanao</option>
+          <option>Region XI – Davao</option>
+          <option>Region XII – SOCCSKSARGEN</option>
+          <option>Region XIII – Caraga</option>
+          <option>CAR – Cordillera</option>
+          <option>BARMM</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Additional Notes or Questions</label>
+        <textarea name="Additional Notes" placeholder="Any concerns, special requirements, or questions for our team…"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep(4)">
+          <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextStep(4)">
+          Review <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 5: Review & Submit ══ -->
+    <div class="card step" id="step-5">
+      <h2><i class="fa-solid fa-clipboard-check"></i> Review &amp; Submit</h2>
+      <p class="section-desc">Please confirm your information before submitting.</p>
+
+      <div class="summary-grid" id="summary-content">
+        <!-- populated by JS -->
+      </div>
+
+      <div class="info-box" style="margin-top:20px">
+        Our team will review your survey and contact you within <strong>1–2 business days</strong>
+        to schedule an on-site visit and provide a free quotation.
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-secondary" onclick="prevStep(5)">
+          <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <button type="submit" class="btn btn-primary" id="submit-btn">
+          <i class="fa-solid fa-paper-plane"></i> Submit Survey
+        </button>
+      </div>
+    </div>
+
+  </form><!-- end form -->
+
+  <a class="back-link" href="../index.html">
+    <i class="fa-solid fa-arrow-left"></i> Back to ArConSe Homepage
+  </a>
+
+  <script>
+    let currentStep = 1;
+    const TOTAL_STEPS = 5;
+
+    // ── Navigation ──
+    function nextStep(from) {
+      if (!validateStep(from)) return;
+      goToStep(from + 1);
+    }
+    function prevStep(from) {
+      goToStep(from - 1);
+    }
+    function goToStep(n) {
+      document.getElementById('step-' + currentStep).classList.remove('active');
+      currentStep = n;
+      document.getElementById('step-' + currentStep).classList.add('active');
+      updateProgress();
+      if (n === TOTAL_STEPS) buildSummary();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Progress ──
+    function updateProgress() {
+      const pct = (currentStep / TOTAL_STEPS) * 100;
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('step-counter').textContent =
+        'Step ' + currentStep + ' of ' + TOTAL_STEPS;
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const lbl = document.getElementById('lbl-' + i);
+        lbl.classList.remove('active', 'done');
+        if (i < currentStep)  lbl.classList.add('done');
+        if (i === currentStep) lbl.classList.add('active');
+      }
+    }
+
+    // ── Validation ──
+    function validateStep(step) {
+      let ok = true;
+      const rules = {
+        1: [
+          { id: 'f-firstname', sel: 'input', check: v => v.trim() !== '' },
+          { id: 'f-lastname',  sel: 'input', check: v => v.trim() !== '' },
+          { id: 'f-email',     sel: 'input', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+          { id: 'f-phone',     sel: 'input', check: v => v.trim() !== '' },
+          { id: 'f-address',   sel: 'input', check: v => v.trim() !== '' },
+        ],
+        2: [
+          { id: 'f-rooftype', sel: 'select', check: v => v !== '' },
+          { id: 'f-roofarea', sel: 'input',  check: v => v.trim() !== '' && Number(v) > 0 },
+        ],
+        3: [
+          { id: 'f-bill', sel: 'input', check: v => v.trim() !== '' && Number(v) > 0 },
+          { id: 'f-kwh',  sel: 'input', check: v => v.trim() !== '' && Number(v) > 0 },
+        ],
+      };
+      if (!rules[step]) return true;
+      rules[step].forEach(rule => {
+        const wrap = document.getElementById(rule.id);
+        const el   = wrap.querySelector(rule.sel);
+        if (!rule.check(el.value)) {
+          wrap.classList.add('error');
+          ok = false;
+        } else {
+          wrap.classList.remove('error');
+        }
+      });
+      if (!ok) {
+        const firstErr = document.querySelector('.step.active .field.error');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return ok;
+    }
+
+    // clear error on input
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+      el.addEventListener('input', () => el.closest('.field')?.classList.remove('error'));
+      el.addEventListener('change', () => el.closest('.field')?.classList.remove('error'));
+    });
+
+    // ── Summary ──
+    function buildSummary() {
+      const form = document.getElementById('survey-form');
+      const data = new FormData(form);
+      const skip = new Set(['_subject','_captcha','_template','_next']);
+
+      // Collect checkbox appliances
+      const appliances = [];
+      form.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        appliances.push(cb.value);
+      });
+
+      const rows = [];
+      const seen = new Set();
+      data.forEach((val, key) => {
+        if (skip.has(key) || seen.has(key)) return;
+        if (key.startsWith('Appliances')) return; // handled below
+        seen.add(key);
+        if (val && String(val).trim() !== '') {
+          rows.push({ label: key, value: val });
+        }
+      });
+      if (appliances.length) {
+        rows.push({ label: 'Main Appliances', value: appliances.join(', ') });
+      }
+
+      const container = document.getElementById('summary-content');
+      container.innerHTML = rows.map(r => `
+        <div class="summary-row">
+          <span class="s-label">${r.label}</span>
+          <span class="s-val">${r.value}</span>
+        </div>`).join('');
+    }
+  </script>
+</body>
+</html>
