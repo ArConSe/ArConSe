@@ -491,6 +491,23 @@
 
   <div class="row">
     <div class="field">
+      <label>Available Roof Area <span>(sqm — usable space)</span></label>
+      <input type="number" id="roofArea" placeholder="e.g. 40" min="1"
+             oninput="updatePanelFitHint()" />
+      <div id="panelFitHint" style="font-size:0.78rem;color:#888;margin-top:4px;"></div>
+    </div>
+    <div class="field">
+      <label>Roof Usable Factor <span>(%)</span></label>
+      <select id="roofUsable" onchange="updatePanelFitHint()">
+        <option value="0.80" selected>80% — flat / open concrete roof</option>
+        <option value="0.70">70% — pitched roof, some obstructions</option>
+        <option value="0.60">60% — complex roof / shading elements</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field">
       <label>System Loss Buffer <span>(%)</span></label>
       <select id="lossBuffer">
         <option value="0.15">15%</option>
@@ -638,6 +655,36 @@
     }
   }
 
+  // Panel physical dimensions (m²) — based on common PH-market panels (2025)
+  // Sources: Jinko Tiger Neo, LONGi HiMO5/6, JA DeepBlue, Canadian Solar HiKu
+  const PANEL_DIMS = {
+    300: { w: 1.640, h: 0.990, sqm: 1.62, label: '1.64 × 0.99 m' },
+    350: { w: 1.756, h: 1.000, sqm: 1.76, label: '1.76 × 1.00 m' },
+    400: { w: 1.722, h: 1.038, sqm: 1.79, label: '1.72 × 1.04 m' },
+    450: { w: 2.094, h: 1.038, sqm: 2.17, label: '2.09 × 1.04 m' },
+    500: { w: 2.094, h: 1.134, sqm: 2.37, label: '2.09 × 1.13 m' },
+    550: { w: 2.256, h: 1.134, sqm: 2.56, label: '2.26 × 1.13 m' },
+    600: { w: 2.384, h: 1.303, sqm: 3.11, label: '2.38 × 1.30 m' },
+    650: { w: 2.456, h: 1.310, sqm: 3.22, label: '2.46 × 1.31 m' },
+  };
+
+  function updatePanelFitHint() {
+    const roofArea  = parseFloat(document.getElementById('roofArea').value) || 0;
+    const usable    = parseFloat(document.getElementById('roofUsable').value);
+    const panelW    = parseInt(document.getElementById('panelWattage').value);
+    const hint      = document.getElementById('panelFitHint');
+    if (!roofArea || roofArea <= 0) { hint.textContent = ''; return; }
+    const dim       = PANEL_DIMS[panelW];
+    const maxPanels = Math.floor((roofArea * usable) / dim.sqm);
+    const maxKw     = ((maxPanels * panelW) / 1000).toFixed(2);
+    hint.innerHTML  = `Panel size: <b>${dim.label}</b> (${dim.sqm.toFixed(2)} m²) &nbsp;→&nbsp; `
+                    + `Max <b>${maxPanels} panels</b> fit = <b>${maxKw} kW</b> `
+                    + `on ${(roofArea * usable).toFixed(1)} sqm usable area`;
+  }
+
+  // Re-run hint when panel wattage changes
+  document.getElementById('panelWattage').addEventListener('change', updatePanelFitHint);
+
   function fmt(n) {
     return '₱' + Math.round(n).toLocaleString();
   }
@@ -676,6 +723,8 @@
     const batteryKwh  = hasBattery ? parseInt(document.getElementById('batteryKwh').value)     : 0;
     const battPriceKwh= hasBattery ? parseInt(document.getElementById('batteryType').value)    : 0;
     const invUpgrade  = hasBattery ? parseInt(document.getElementById('inverterUpgrade').value) : 0;
+    const roofArea    = parseFloat(document.getElementById('roofArea').value) || 0;
+    const roofUsable  = parseFloat(document.getElementById('roofUsable').value);
 
     if (!monthlyKwh || monthlyKwh <= 0) {
       alert('Please enter your monthly kWh consumption.');
@@ -700,9 +749,17 @@
     const solarNrgKw = (monthlyKwh / (opDays * 4.2)) * opPattern / opHours / 0.85;
 
     // Final recommended: blend (average) of both approaches
-    const blendedKw    = (systemKw + solarNrgKw) / 2;
-    const numPanels    = Math.ceil((blendedKw * 1000) / panelW);
-    const actualKw     = (numPanels * panelW) / 1000;
+    const blendedKw      = (systemKw + solarNrgKw) / 2;
+    const neededPanels   = Math.ceil((blendedKw * 1000) / panelW);
+
+    // Roof area constraint
+    const dim            = PANEL_DIMS[panelW];
+    const maxByRoof      = (roofArea > 0)
+                           ? Math.floor((roofArea * roofUsable) / dim.sqm)
+                           : Infinity;
+    const roofLimited    = neededPanels > maxByRoof;
+    const numPanels      = roofLimited ? maxByRoof : neededPanels;
+    const actualKw       = (numPanels * panelW) / 1000;
 
     // ── OUTPUTS ─────────────────────────────────────
     const perfRatio      = 0.75;
@@ -742,6 +799,10 @@
         : 'based on ₱10/kWh grid rate';
 
     // Calculation breakdown
+    const roofWarning = roofLimited
+      ? `<br><span style="color:#e65100;font-weight:700;">⚠️ Roof limit: only ${maxByRoof} panels fit on ${(roofArea * roofUsable).toFixed(1)} sqm usable area (${dim.label} each, ${dim.sqm.toFixed(2)} m²/panel). System is roof-constrained — consider larger panel wattage or expanding usable area.</span>`
+      : (roofArea > 0 ? `<br><span style="color:#2e7d32;">✅ Roof check: ${neededPanels} panels needed, ${maxByRoof} panels fit — roof is sufficient.</span>` : '');
+
     document.getElementById('breakdown-text').innerHTML = `
       <b>System Sizing Breakdown:</b><br>
       Monthly Consumption: <b>${monthlyKwh.toLocaleString()} kWh</b>
@@ -755,7 +816,9 @@
       Peak Sun Hours: <b>${sunHours} hrs/day</b>
         &nbsp;|&nbsp; Loss Buffer: <b>${loss * 100}%</b>
         &nbsp;|&nbsp; Performance Ratio: <b>75%</b><br>
-      Panel: <b>${panelW}W × ${numPanels} panels = ${actualKw.toFixed(2)} kW actual</b>
+      Panel size: <b>${dim.label}</b> (${dim.sqm.toFixed(2)} m²)
+        &nbsp;|&nbsp; <b>${panelW}W × ${numPanels} panels = ${actualKw.toFixed(2)} kW actual</b>
+      ${roofWarning}
     `;
 
     // Cost breakdown
