@@ -672,9 +672,6 @@
   // Re-run hint when panel wattage changes
   document.getElementById('panelWattage').addEventListener('change', updatePanelFitHint);
 
-  // Init battery package options on page load
-  toggleBatterySection();
-
   function fmt(n) {
     return '₱' + Math.round(n).toLocaleString();
   }
@@ -899,6 +896,9 @@
     document.querySelector('.results').style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // Init: populate battery package options after all constants are defined
+  toggleBatterySection();
 </script>
 
 </body>
