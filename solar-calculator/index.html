@@ -530,34 +530,20 @@
   <!-- Battery Section — shown for Hybrid / Off-Grid -->
   <div id="batterySection" style="display:none;">
     <hr class="divider">
-    <div class="row">
-      <div class="field">
-        <label>Battery Brand <span>(LiFePO4 — ₱/kWh)</span></label>
-        <select id="batteryType">
-          <option value="10000">Generic / GSL Energy — ₱10,000/kWh  (budget)</option>
-          <option value="18000" selected>Pylontech US3000/US5000 — ₱18,000/kWh  ⭐ most popular</option>
-          <option value="20000">Growatt ARK LiFePO4 — ₱20,000/kWh</option>
-          <option value="30000">BYD Battery-Box HVS/HVM — ₱30,000/kWh</option>
-          <option value="35000">Huawei LUNA2000 — ₱35,000/kWh  (premium)</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Battery Capacity <span>(kWh)</span></label>
-        <select id="batteryKwh">
-          <option value="5">5 kWh — small / partial backup</option>
-          <option value="10" selected>10 kWh — typical Filipino home</option>
-          <option value="15">15 kWh — heavy usage</option>
-          <option value="20">20 kWh — large home / 2-day autonomy</option>
-          <option value="30">30 kWh — off-grid / commercial</option>
-        </select>
-      </div>
+    <div class="field">
+      <label>Battery + Inverter Package <span>(matched pair — ₱/kWh battery + inverter flat cost)</span></label>
+      <select id="batteryPackage">
+        <!-- options populated by toggleBatterySection() -->
+      </select>
     </div>
     <div class="field">
-      <label>Inverter / Controller Upgrade <span>(add-on to solar inverter cost)</span></label>
-      <select id="inverterUpgrade">
-        <option value="35000">Hybrid Inverter Standard (Growatt, Solis, GoodWe) — +₱35,000</option>
-        <option value="50000">Hybrid Inverter Mid (Sungrow, Solax) — +₱50,000</option>
-        <option value="70000">Hybrid Inverter Premium (Huawei SUN2000, Fronius) — +₱70,000</option>
+      <label>Battery Capacity <span>(kWh)</span></label>
+      <select id="batteryKwh">
+        <option value="5">5 kWh — small / partial backup</option>
+        <option value="10" selected>10 kWh — typical Filipino home</option>
+        <option value="15">15 kWh — heavy usage</option>
+        <option value="20">20 kWh — large home / 2-day autonomy</option>
+        <option value="30">30 kWh — off-grid / commercial</option>
       </select>
     </div>
     <hr class="divider">
@@ -689,22 +675,31 @@
     return '₱' + Math.round(n).toLocaleString();
   }
 
+  // value format: "batteryPricePerKwh|inverterFlatCost"
+  const HYBRID_PACKAGES = [
+    { value: '10000|35000', label: 'Generic LiFePO4 + Growatt/Solis Hybrid — ₱10,000/kWh + ₱35,000 inverter' },
+    { value: '18000|35000', label: 'Pylontech US3000/US5000 + Growatt/Solis/GoodWe — ₱18,000/kWh + ₱35,000 inverter  ⭐ most popular', selected: true },
+    { value: '20000|40000', label: 'Growatt ARK + Growatt SPH Hybrid — ₱20,000/kWh + ₱40,000 inverter' },
+    { value: '30000|50000', label: 'BYD Battery-Box HVS/HVM + Sungrow/GoodWe — ₱30,000/kWh + ₱50,000 inverter' },
+    { value: '35000|70000', label: 'Huawei LUNA2000 + Huawei SUN2000 — ₱35,000/kWh + ₱70,000 inverter  (premium)' },
+  ];
+  const OFFGRID_PACKAGES = [
+    { value: '10000|80000', label: 'Generic LiFePO4 + Growatt/Victron Off-Grid MPPT — ₱10,000/kWh + ₱80,000 inverter' },
+    { value: '18000|80000', label: 'Pylontech + Victron MultiPlus/Quattro — ₱18,000/kWh + ₱80,000 inverter', selected: true },
+    { value: '18000|100000', label: 'Pylontech + SMA Sunny Island — ₱18,000/kWh + ₱100,000 inverter' },
+    { value: '30000|100000', label: 'BYD Battery-Box + Schneider/SMA Premium — ₱30,000/kWh + ₱100,000 inverter' },
+  ];
+
   function toggleBatterySection() {
     const type    = document.getElementById('systemType').value;
     const section = document.getElementById('batterySection');
-    const invSel  = document.getElementById('inverterUpgrade');
+    const pkgSel  = document.getElementById('batteryPackage');
     const hasBatt = type !== 'grid-tied';
     section.style.display = hasBatt ? 'block' : 'none';
-    if (type === 'off-grid') {
-      invSel.innerHTML = `
-        <option value="80000">Off-Grid Inverter + MPPT Charge Controller (Victron, Growatt) — +₱80,000</option>
-        <option value="100000">Off-Grid Inverter Premium (Schneider, SMA Sunny Island) — +₱100,000</option>`;
-    } else {
-      invSel.innerHTML = `
-        <option value="35000">Hybrid Inverter Standard (Growatt, Solis, GoodWe) — +₱35,000</option>
-        <option value="50000">Hybrid Inverter Mid (Sungrow, Solax) — +₱50,000</option>
-        <option value="70000">Hybrid Inverter Premium (Huawei SUN2000, Fronius) — +₱70,000</option>`;
-    }
+    const packages = type === 'off-grid' ? OFFGRID_PACKAGES : HYBRID_PACKAGES;
+    pkgSel.innerHTML = packages.map(p =>
+      `<option value="${p.value}"${p.selected ? ' selected' : ''}>${p.label}</option>`
+    ).join('');
   }
 
   function calculate() {
@@ -720,9 +715,10 @@
     const costPerKw   = parseInt(document.getElementById('costPerKw').value);
     const systemType  = document.getElementById('systemType').value;
     const hasBattery  = systemType !== 'grid-tied';
-    const batteryKwh  = hasBattery ? parseInt(document.getElementById('batteryKwh').value)     : 0;
-    const battPriceKwh= hasBattery ? parseInt(document.getElementById('batteryType').value)    : 0;
-    const invUpgrade  = hasBattery ? parseInt(document.getElementById('inverterUpgrade').value) : 0;
+    const batteryKwh  = hasBattery ? parseInt(document.getElementById('batteryKwh').value) : 0;
+    const [battPriceKwh, invUpgrade] = hasBattery
+      ? document.getElementById('batteryPackage').value.split('|').map(Number)
+      : [0, 0];
     const roofArea    = parseFloat(document.getElementById('roofArea').value) || 0;
     const roofUsable  = parseFloat(document.getElementById('roofUsable').value);
 
@@ -834,7 +830,7 @@
         &nbsp;(${numPanels} panels + inverter${hasBattery ? ' + ' + batteryKwh + ' kWh battery' : ''} + installation)<br>
       <span style="color:#aaa;font-size:0.8rem;">
         Solar: ₱35k/kW = budget &nbsp;|&nbsp; ₱45k/kW = standard &nbsp;|&nbsp; ₱55–65k/kW = premium
-        ${hasBattery ? '<br>Battery: Pylontech ₱18k/kWh (most popular) &nbsp;|&nbsp; Growatt ARK ₱20k &nbsp;|&nbsp; BYD ₱30k &nbsp;|&nbsp; Huawei LUNA ₱35k/kWh' : ''}
+        ${hasBattery ? '<br>Packages: Pylontech+Growatt ₱18k+₱35k (popular) &nbsp;|&nbsp; Growatt ARK+SPH ₱20k+₱40k &nbsp;|&nbsp; BYD+Sungrow ₱30k+₱50k &nbsp;|&nbsp; Huawei LUNA+SUN2000 ₱35k+₱70k' : ''}
       </span>
     `;
 
